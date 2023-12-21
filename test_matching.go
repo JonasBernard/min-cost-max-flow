@@ -7,37 +7,7 @@ import (
 	"github.com/JonasBernard/min-cost-max-flow/util"
 )
 
-type MatchNode[L any, R any] struct {
-	Name       string
-	IsRight    bool
-	IsSource   bool
-	IsSink     bool
-	LeftValue  L
-	RightValue R
-}
-
-func (n MatchNode[L, R]) String() string {
-	return n.Name
-}
-
-type Child struct {
-	Name string
-	W1   string
-	W2   string
-	W3   string
-}
-
-type WorkshopSlot struct {
-	Workshop Workshop
-	Nr       int
-}
-
-type Workshop struct {
-	Name     string
-	Capacity int
-}
-
-func main() {
+func __main() {
 	children := []Child{
 		{"Mia", "Tanz", "Tuch", "Akro"},
 		{"Noah", "Tanz", "Akro", "Tuch"},

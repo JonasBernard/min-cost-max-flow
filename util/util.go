@@ -99,8 +99,7 @@ func ArgMin[T comparable](values map[T](float64)) T {
 }
 
 func Remove[T any](slice []T, index int) []T {
-	slice[index] = slice[len(slice)-1]
-	return slice[:len(slice)-1]
+	return append(slice[:index], slice[index+1:]...)
 }
 
 func RemoveValue[T comparable](slice []T, value T) []T {
