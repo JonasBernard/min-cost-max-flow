@@ -33,15 +33,15 @@ func (n WeigthedNetwork[T]) ResidualGraph(flow map[*WeightedDirectedEdge[T]]floa
 		Sink:   n.Sink,
 	}
 
-	print("Constructing residual graph...")
+	// print("Constructing residual graph...")
 
 	for _, e := range n.Edges {
 		flowHere := flow[e]
 
-		fmt.Printf("Considering edge from %v to %v. Capacity: %v. Flow: %v\n", e.VertexFrom, e.VertexTo, e.Capacity, flowHere)
+		// fmt.Printf("Considering edge from %v to %v. Capacity: %v. Flow: %v\n", e.VertexFrom, e.VertexTo, e.Capacity, flowHere)
 
 		if e.Capacity > flowHere {
-			fmt.Printf("adding forward arc for %v and %v of capacity %v\n", e.VertexFrom.Node, e.VertexTo.Node, e.Capacity-flowHere)
+			// fmt.Printf("adding forward arc for %v and %v of capacity %v\n", e.VertexFrom.Node, e.VertexTo.Node, e.Capacity-flowHere)
 			forwardArc := WeightedDirectedEdge[T]{
 				VertexFrom:   e.VertexFrom,
 				VertexTo:     e.VertexTo,
@@ -54,7 +54,7 @@ func (n WeigthedNetwork[T]) ResidualGraph(flow map[*WeightedDirectedEdge[T]]floa
 		}
 
 		if flowHere > 0 {
-			fmt.Printf("adding reverse arc for %v and %v of capacity %v\n", e.VertexFrom.Node, e.VertexTo.Node, flowHere)
+			// fmt.Printf("adding reverse arc for %v and %v of capacity %v\n", e.VertexFrom.Node, e.VertexTo.Node, flowHere)
 			reverseArc := WeightedDirectedEdge[T]{
 				VertexFrom:   e.VertexTo,
 				VertexTo:     e.VertexFrom,
@@ -66,10 +66,10 @@ func (n WeigthedNetwork[T]) ResidualGraph(flow map[*WeightedDirectedEdge[T]]floa
 			residual.Edges = append(residual.Edges, &reverseArc)
 		}
 
-		fmt.Printf("Resulting graph:\n%v\n", residual)
+		// fmt.Printf("Resulting graph:\n%v\n", residual)
 	}
 
-	print("Finished constructing residual graph.\n")
+	// print("Finished constructing residual graph.\n")
 
 	return
 }
@@ -79,7 +79,7 @@ func (_ WeigthedNetwork[T]) AugmentFlow(flow map[*WeightedDirectedEdge[T]]float6
 	pathCapacities := util.MapSlice(path.Edges, func(edge **WeightedDirectedEdge[T]) float64 { return (*edge).Capacity })
 	bottleneck := util.MinSlice(pathCapacities)
 
-	fmt.Printf("Augmenting by bottleneck value  %v\n\n", bottleneck)
+	// fmt.Printf("Augmenting by bottleneck value  %v\n\n", bottleneck)
 
 	for _, edge := range path.Edges {
 		if edge.IsReverseArc {
@@ -89,8 +89,8 @@ func (_ WeigthedNetwork[T]) AugmentFlow(flow map[*WeightedDirectedEdge[T]]float6
 		}
 	}
 
-	fmt.Printf("New Flow: \n\n")
-	util.PrintMap(newFlow)
+	// fmt.Printf("New Flow: \n\n")
+	// util.PrintMap(newFlow)
 	return
 }
 
@@ -117,6 +117,7 @@ func (n WeigthedNetwork[T]) MinCostMaxFlow() (flow map[*WeightedDirectedEdge[T]]
 		}
 
 		fmt.Printf("Augmenting along: %v\n\n", path.Edges)
+
 		flow = residual.AugmentFlow(flow, *path)
 	}
 
