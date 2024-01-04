@@ -49,10 +49,10 @@ func main() {
 	children := []Child{
 		{"Mia", "Tanz", "Tuch", "Akro"},
 		{"Noah", "Tanz", "Akro", "Tuch"},
-		{"Jonas", "Tanz", "Akro", "Tuch"},
-		{"Max", "Tuch", "Tanz", "Akro"},
-		{"Johanna", "Akro", "Tanz", "Tuch"},
-		{"Sarah", "Tanz", "Jonglage", "Akro"},
+		//{"Jonas", "Tanz", "Akro", "Tuch"},
+		//{"Max", "Tuch", "Tanz", "Akro"},
+		//{"Johanna", "Akro", "Tanz", "Tuch"},
+		//{"Sarah", "Tanz", "Jonglage", "Akro"},
 	}
 
 	tanz := Workshop{"Tanz", 1}
@@ -75,7 +75,7 @@ func main() {
 		}
 	}
 
-	workshops := []Workshop{tanz, tuch, akro, jonglage}
+	workshops := []Workshop{jonglage}
 
 	workshopSlots := util.FlatMapSlice(workshops, func(w *Workshop) []WorkshopSlot {
 		slots := make([]WorkshopSlot, 0, w.Capacity)
@@ -94,7 +94,7 @@ func main() {
 		Rights: workshopSlots,
 	}
 
-	matchingEdges, err := matchingProblem.Solve(func(c Child, w WorkshopSlot) (connect bool, weight float64) {
+	matchingEdgesArray, err := matchingProblem.SolveMany(2, func(c Child, w WorkshopSlot) (connect bool, weight float64) {
 		w1 := getWorkshop(c.W1)
 		w2 := getWorkshop(c.W2)
 		w3 := getWorkshop(c.W3)
@@ -116,20 +116,25 @@ func main() {
 		fmt.Printf("%v\n", err)
 	}
 
-	for _, m := range matchingEdges {
-		fmt.Printf("Assing %v to slot %v of workshop %v\n",
-			m.Left.Name,
-			m.Right.Nr,
-			m.Right.Workshop.Name)
-	}
+	// matchingEdgesArray := [][]matching.MatchingEdge[Child, WorkshopSlot]{matchingEdges}
 
-	for _, w := range workshops {
-		fmt.Println()
-		fmt.Printf("Kids of workshop %v (max %v):\n", w.Name, w.Capacity)
-		for _, e := range util.FilterSlice(matchingEdges, func(e matching.MatchingEdge[Child, WorkshopSlot]) bool {
-			return e.Right.Workshop == w
-		}) {
-			fmt.Printf("%v\n", e.Left.Name)
+	for i, matchingEdges := range matchingEdgesArray {
+		fmt.Printf("---\nSolution %v\n", i)
+		for _, m := range matchingEdges {
+			fmt.Printf("Assing %v to slot %v of workshop %v\n",
+				m.Left.Name,
+				m.Right.Nr,
+				m.Right.Workshop.Name)
+		}
+
+		for _, w := range workshops {
+			fmt.Println()
+			fmt.Printf("Kids of workshop %v (max %v):\n", w.Name, w.Capacity)
+			for _, e := range util.FilterSlice(matchingEdges, func(e matching.MatchingEdge[Child, WorkshopSlot]) bool {
+				return e.Right.Workshop == w
+			}) {
+				fmt.Printf("%v\n", e.Left.Name)
+			}
 		}
 	}
 }
