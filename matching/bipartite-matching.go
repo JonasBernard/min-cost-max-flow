@@ -108,7 +108,6 @@ func (m MatchingProblem[L, R]) ConstructNetworkFromProblem(weights func(leftNode
 }
 
 func (m MatchingProblem[L, R]) InterpretNetworkFlow(flow map[*ctypes.WeightedDirectedEdge[MatchNode[L, R]]]float64, source ctypes.Vertex[MatchNode[L, R]], sink ctypes.Vertex[MatchNode[L, R]]) (matching []MatchingEdge[L, R], err error) {
-
 	matchingWeightedEdges := util.FilterMapBoth(flow, func(wde *ctypes.WeightedDirectedEdge[MatchNode[L, R]], f float64) bool {
 		if f == 0 {
 			return false

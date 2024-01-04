@@ -111,7 +111,7 @@ func (n WeigthedNetwork[T]) MinCostMaxFlow() (flow map[*WeightedDirectedEdge[T]]
 		fmt.Printf("Used BellmanFordMoore to find the following distances:\n")
 		util.PrintMap(distances)
 
-		path, err := residual.ShortestPathFromDistances(distances, residual.Source, residual.Sink)
+		path, err := residual.ShortestPathWithMinHopFromDistances(distances, residual.Source, residual.Sink)
 		if err != nil {
 			break // no augmenting path found means we are done
 		}
