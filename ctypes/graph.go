@@ -233,7 +233,7 @@ func (p WeigthedDirectedGraph[T]) BFSShortestHopPathTo(root Vertex[T], to Vertex
 
 		parent, ok := parents[head]
 		if !ok {
-			return nil, errors.New("No path from root to to")
+			return nil, errors.New("No path from root to vertex")
 		}
 		path.Vertices = append(path.Vertices, parent)
 		path.Edges = append(path.Edges, p.getEdge(parent, head))
@@ -263,7 +263,7 @@ func (g WeigthedDirectedGraph[T]) BellmanFordMoore(s Vertex[T]) (distances map[V
 }
 
 /*
-Recunstructs a shortest path from the distances that Bellman-Ford-Moore returned.
+Reconstructs a shortest path from the distances that Bellman-Ford-Moore returned.
 Returns an error if no path exists or a negative cycle ocurrs.
 */
 func (g WeigthedDirectedGraph[T]) ShortestPathFromDistances(distances map[Vertex[T]]float64, s Vertex[T], t Vertex[T]) (*WeigthedDirectedGraph[T], error) {
