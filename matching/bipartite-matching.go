@@ -32,7 +32,7 @@ type MatchingEdge[L graph.Node, R graph.Node] struct {
 	Right R
 }
 
-func (m MatchingProblem[L, R]) ConstructNetworkFromProblem(weights func(leftNode L, rightNode R) (connect bool, weights float64)) (net network.WeigthedNetwork[MatchNode[L, R]], source graph.Vertex[MatchNode[L, R]], sink graph.Vertex[MatchNode[L, R]]) {
+func (m MatchingProblem[L, R]) ConstructNetworkFromProblem(weights func(leftNode L, rightNode R) (connect bool, weights float64), capacities func(rightNode R) (capacitiy float64)) (net network.WeigthedNetwork[MatchNode[L, R]], source graph.Vertex[MatchNode[L, R]], sink graph.Vertex[MatchNode[L, R]]) {
 	leftNodes := util.MapSlice(m.Lefts, func(l *L) graph.Vertex[MatchNode[L, R]] {
 		return graph.V(&MatchNode[L, R]{
 			Name:      (*l).String(),
@@ -88,7 +88,7 @@ func (m MatchingProblem[L, R]) ConstructNetworkFromProblem(weights func(leftNode
 			VertexFrom: slot,
 			VertexTo:   sink,
 			Weight:     1,
-			Capacity:   1,
+			Capacity:   capacities(slot.Node.RightValue),
 		})
 	}
 
@@ -136,8 +136,8 @@ func (m MatchingProblem[L, R]) InterpretNetworkFlow(flow map[*graph.WeightedDire
 }
 
 // Shuffles the order of the given edges iteration times to get different results
-func (m MatchingProblem[L, R]) SolveMany(iterations int, weights func(leftNode L, rightNode R) (connect bool, weights float64)) (matchings [][]MatchingEdge[L, R], err error) {
-	network, source, sink := m.ConstructNetworkFromProblem(weights)
+func (m MatchingProblem[L, R]) SolveMany(iterations int, weights func(leftNode L, rightNode R) (connect bool, weights float64), capacities func(rightNode R) (capacity float64)) (matchings [][]MatchingEdge[L, R], err error) {
+	network, source, sink := m.ConstructNetworkFromProblem(weights, capacities)
 
 	for i := 0; i < iterations; i++ {
 		edges := network.Edges
@@ -159,8 +159,8 @@ func (m MatchingProblem[L, R]) SolveMany(iterations int, weights func(leftNode L
 	return matchings, err
 }
 
-func (m MatchingProblem[L, R]) Solve(weights func(leftNode L, rightNode R) (connect bool, weight float64)) (matching []MatchingEdge[L, R], err error) {
-	network, source, sink := m.ConstructNetworkFromProblem(weights)
+func (m MatchingProblem[L, R]) Solve(weights func(leftNode L, rightNode R) (connect bool, weight float64), capacities func(rightNode R) (capacity float64)) (matching []MatchingEdge[L, R], err error) {
+	network, source, sink := m.ConstructNetworkFromProblem(weights, capacities)
 
 	flow := network.MinCostMaxFlow()
 

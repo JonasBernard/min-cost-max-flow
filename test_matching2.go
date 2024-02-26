@@ -111,6 +111,8 @@ func main() {
 		}
 
 		return true, 10
+	}, func(rightNode WorkshopSlot) (capacity float64) {
+		return 1
 	})
 
 	if err != nil {
