@@ -47,18 +47,19 @@ type Workshop struct {
 
 func main() {
 	children := []Child{
-		{"Mia", "Tanz", "Tuch", "Akro"},
-		{"Noah", "Tanz", "Akro", "Tuch"},
-		//{"Jonas", "Tanz", "Akro", "Tuch"},
-		//{"Max", "Tuch", "Tanz", "Akro"},
-		//{"Johanna", "Akro", "Tanz", "Tuch"},
-		//{"Sarah", "Tanz", "Jonglage", "Akro"},
+		{"Mia", "Jonglage", "Tuch", "Akro"},
+		{"Noah", "Jonglage", "Tuch", "Akro"},
+		{"Jonas", "Jonglage", "Tuch", "Akro"},
+		{"Max", "Tuch", "Tanz", "Akro"},
+		{"Johanna", "Akro", "Tanz", "Tuch"},
+		{"Sarah", "Tanz", "Jonglage", "Akro"},
+		{"Felix", "Jonglage", "Tanz", "Tuch"},
 	}
 
-	tanz := Workshop{"Tanz", 1}
-	tuch := Workshop{"Tuch", 1}
+	tanz := Workshop{"Tanz", 2}
+	tuch := Workshop{"Tuch", 2}
 	akro := Workshop{"Akro", 2}
-	jonglage := Workshop{"Jonglage", 2}
+	jonglage := Workshop{"Jonglage", 1}
 
 	getWorkshop := func(Name string) Workshop {
 		switch s := Name; s {
@@ -75,7 +76,7 @@ func main() {
 		}
 	}
 
-	workshops := []Workshop{jonglage}
+	workshops := []Workshop{jonglage, akro, tuch, tanz}
 
 	workshopSlots := util.FlatMapSlice(workshops, func(w *Workshop) []WorkshopSlot {
 		slots := make([]WorkshopSlot, 0, w.Capacity)
@@ -94,7 +95,7 @@ func main() {
 		Rights: workshopSlots,
 	}
 
-	matchingEdgesArray, err := matchingProblem.SolveMany(2, func(c Child, w WorkshopSlot) (connect bool, weight float64) {
+	matchingEdgesArray, err := matchingProblem.SolveMany(5, func(c Child, w WorkshopSlot) (connect bool, weight float64) {
 		w1 := getWorkshop(c.W1)
 		w2 := getWorkshop(c.W2)
 		w3 := getWorkshop(c.W3)
@@ -106,10 +107,10 @@ func main() {
 			return true, 2
 		}
 		if w3 == w.Workshop {
-			return true, 3
+			return true, 5
 		}
 
-		return true, 10.0
+		return true, 10
 	})
 
 	if err != nil {

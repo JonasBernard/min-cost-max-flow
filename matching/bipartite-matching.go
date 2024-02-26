@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/JonasBernard/min-cost-max-flow/ctypes"
+	"github.com/JonasBernard/min-cost-max-flow/graph"
+	"github.com/JonasBernard/min-cost-max-flow/network"
 	"github.com/JonasBernard/min-cost-max-flow/util"
 )
 
@@ -21,27 +22,27 @@ func (n MatchNode[L, R]) String() string {
 	return n.Name
 }
 
-type MatchingProblem[L ctypes.Node, R ctypes.Node] struct {
+type MatchingProblem[L graph.Node, R graph.Node] struct {
 	Lefts  []L
 	Rights []R
 }
 
-type MatchingEdge[L ctypes.Node, R ctypes.Node] struct {
+type MatchingEdge[L graph.Node, R graph.Node] struct {
 	Left  L
 	Right R
 }
 
-func (m MatchingProblem[L, R]) ConstructNetworkFromProblem(weights func(leftNode L, rightNode R) (connect bool, weights float64)) (network ctypes.WeigthedNetwork[MatchNode[L, R]], source ctypes.Vertex[MatchNode[L, R]], sink ctypes.Vertex[MatchNode[L, R]]) {
-	leftNodes := util.MapSlice(m.Lefts, func(l *L) ctypes.Vertex[MatchNode[L, R]] {
-		return ctypes.V(&MatchNode[L, R]{
+func (m MatchingProblem[L, R]) ConstructNetworkFromProblem(weights func(leftNode L, rightNode R) (connect bool, weights float64)) (net network.WeigthedNetwork[MatchNode[L, R]], source graph.Vertex[MatchNode[L, R]], sink graph.Vertex[MatchNode[L, R]]) {
+	leftNodes := util.MapSlice(m.Lefts, func(l *L) graph.Vertex[MatchNode[L, R]] {
+		return graph.V(&MatchNode[L, R]{
 			Name:      (*l).String(),
 			IsRight:   false,
 			LeftValue: *l,
 		})
 	})
 
-	rightNodes := util.MapSlice(m.Rights, func(r *R) ctypes.Vertex[MatchNode[L, R]] {
-		return ctypes.V(&MatchNode[L, R]{
+	rightNodes := util.MapSlice(m.Rights, func(r *R) graph.Vertex[MatchNode[L, R]] {
+		return graph.V(&MatchNode[L, R]{
 			Name:       (*r).String(),
 			IsRight:    true,
 			RightValue: *r,
@@ -49,18 +50,18 @@ func (m MatchingProblem[L, R]) ConstructNetworkFromProblem(weights func(leftNode
 	})
 
 	// the capacity cannot be known beforehand because it depends on what the choices are
-	allEdges := make([]*ctypes.WeightedDirectedEdge[MatchNode[L, R]], 0, 4*len(leftNodes)+len(rightNodes))
+	allEdges := make([]*graph.WeightedDirectedEdge[MatchNode[L, R]], 0, 4*len(leftNodes)+len(rightNodes))
 
-	source = ctypes.V(&MatchNode[L, R]{
+	source = graph.V(&MatchNode[L, R]{
 		Name: "S", IsSource: true,
 	})
 
-	sink = ctypes.V(&MatchNode[L, R]{
+	sink = graph.V(&MatchNode[L, R]{
 		Name: "T", IsSink: true,
 	})
 
 	for _, leftNode := range leftNodes {
-		allEdges = append(allEdges, &ctypes.WeightedDirectedEdge[MatchNode[L, R]]{
+		allEdges = append(allEdges, &graph.WeightedDirectedEdge[MatchNode[L, R]]{
 			VertexFrom: source,
 			VertexTo:   leftNode,
 			Weight:     1,
@@ -71,7 +72,7 @@ func (m MatchingProblem[L, R]) ConstructNetworkFromProblem(weights func(leftNode
 			connect, weight := weights(leftNode.Node.LeftValue, rightNode.Node.RightValue)
 
 			if connect {
-				newEdge := ctypes.WeightedDirectedEdge[MatchNode[L, R]]{
+				newEdge := graph.WeightedDirectedEdge[MatchNode[L, R]]{
 					VertexFrom: leftNode,
 					VertexTo:   rightNode,
 					Weight:     weight,
@@ -83,7 +84,7 @@ func (m MatchingProblem[L, R]) ConstructNetworkFromProblem(weights func(leftNode
 	}
 
 	for _, slot := range rightNodes {
-		allEdges = append(allEdges, &ctypes.WeightedDirectedEdge[MatchNode[L, R]]{
+		allEdges = append(allEdges, &graph.WeightedDirectedEdge[MatchNode[L, R]]{
 			VertexFrom: slot,
 			VertexTo:   sink,
 			Weight:     1,
@@ -95,8 +96,8 @@ func (m MatchingProblem[L, R]) ConstructNetworkFromProblem(weights func(leftNode
 	allVertices = append(allVertices, source)
 	allVertices = append(allVertices, sink)
 
-	network = ctypes.WeigthedNetwork[MatchNode[L, R]]{
-		WeigthedDirectedGraph: ctypes.WeigthedDirectedGraph[MatchNode[L, R]]{
+	net = network.WeigthedNetwork[MatchNode[L, R]]{
+		WeigthedDirectedGraph: graph.WeigthedDirectedGraph[MatchNode[L, R]]{
 			Vertices: allVertices,
 			Edges:    allEdges,
 		},
@@ -107,8 +108,8 @@ func (m MatchingProblem[L, R]) ConstructNetworkFromProblem(weights func(leftNode
 	return
 }
 
-func (m MatchingProblem[L, R]) InterpretNetworkFlow(flow map[*ctypes.WeightedDirectedEdge[MatchNode[L, R]]]float64, source ctypes.Vertex[MatchNode[L, R]], sink ctypes.Vertex[MatchNode[L, R]]) (matching []MatchingEdge[L, R], err error) {
-	matchingWeightedEdges := util.FilterMapBoth(flow, func(wde *ctypes.WeightedDirectedEdge[MatchNode[L, R]], f float64) bool {
+func (m MatchingProblem[L, R]) InterpretNetworkFlow(flow map[*graph.WeightedDirectedEdge[MatchNode[L, R]]]float64, source graph.Vertex[MatchNode[L, R]], sink graph.Vertex[MatchNode[L, R]]) (matching []MatchingEdge[L, R], err error) {
+	matchingWeightedEdges := util.FilterMapBoth(flow, func(wde *graph.WeightedDirectedEdge[MatchNode[L, R]], f float64) bool {
 		if f == 0 {
 			return false
 		}

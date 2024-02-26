@@ -84,14 +84,14 @@ func MinSlice(values []float64) (min float64) {
 }
 
 func ArgMin[T comparable](values map[T](float64)) T {
-	fmt.Printf("Finding argmin of %v\n", values)
+	// fmt.Printf("Finding argmin of %v\n", values)
 	var index T
 	expectedMin := MinMapValue(values)
-	fmt.Printf("Attained minimum: %v\n", expectedMin)
+	// fmt.Printf("Attained minimum: %v\n", expectedMin)
 	for i, v := range values {
 		if v == expectedMin {
 			index = i
-			fmt.Printf("Found minimal arg %v\n", i)
+			// fmt.Printf("Found minimal arg %v\n", i)
 			break
 		}
 	}

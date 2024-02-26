@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/JonasBernard/min-cost-max-flow/ctypes"
+	"github.com/JonasBernard/min-cost-max-flow/graph"
+	"github.com/JonasBernard/min-cost-max-flow/network"
 	"github.com/JonasBernard/min-cost-max-flow/util"
 )
 
@@ -41,22 +42,22 @@ func __main() {
 
 	// modelling as a network problem
 
-	childNodes := util.MapSlice(children, func(c *Child) ctypes.Vertex[MatchNode[Child, WorkshopSlot]] {
-		return ctypes.V(&MatchNode[Child, WorkshopSlot]{
+	childNodes := util.MapSlice(children, func(c *Child) graph.Vertex[MatchNode[Child, WorkshopSlot]] {
+		return graph.V(&MatchNode[Child, WorkshopSlot]{
 			Name:      c.Name,
 			IsRight:   false,
 			LeftValue: *c,
 		})
 	})
 
-	workshopNodes := util.FlatMapSlice(workshops, func(w *Workshop) []ctypes.Vertex[MatchNode[Child, WorkshopSlot]] {
-		workshopSlots := make([]ctypes.Vertex[MatchNode[Child, WorkshopSlot]], 0, w.Capacity)
+	workshopNodes := util.FlatMapSlice(workshops, func(w *Workshop) []graph.Vertex[MatchNode[Child, WorkshopSlot]] {
+		workshopSlots := make([]graph.Vertex[MatchNode[Child, WorkshopSlot]], 0, w.Capacity)
 		for i := 0; i < w.Capacity; i++ {
 			theSlot := WorkshopSlot{
 				Workshop: *w,
 				Nr:       i + 1,
 			}
-			workshopSlots = append(workshopSlots, ctypes.V(&MatchNode[Child, WorkshopSlot]{
+			workshopSlots = append(workshopSlots, graph.V(&MatchNode[Child, WorkshopSlot]{
 				Name:       fmt.Sprintf("%v (%v)", w.Name, i+1),
 				IsRight:    true,
 				RightValue: theSlot,
@@ -66,18 +67,18 @@ func __main() {
 	})
 
 	// the capacity cannot be known beforehand because it depends on what the choices are
-	allEdges := make([]*ctypes.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]], 0, 4*len(childNodes)+len(workshopNodes))
+	allEdges := make([]*graph.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]], 0, 4*len(childNodes)+len(workshopNodes))
 
-	source := ctypes.V(&MatchNode[Child, WorkshopSlot]{
+	source := graph.V(&MatchNode[Child, WorkshopSlot]{
 		Name: "S", IsSource: true,
 	})
 
-	sink := ctypes.V(&MatchNode[Child, WorkshopSlot]{
+	sink := graph.V(&MatchNode[Child, WorkshopSlot]{
 		Name: "T", IsSink: true,
 	})
 
 	for _, childNode := range childNodes {
-		allEdges = append(allEdges, &ctypes.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]]{
+		allEdges = append(allEdges, &graph.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]]{
 			VertexFrom: source,
 			VertexTo:   childNode,
 			Weight:     1,
@@ -88,25 +89,25 @@ func __main() {
 		w2 := getWorkshop(childNode.Node.LeftValue.W2)
 		w3 := getWorkshop(childNode.Node.LeftValue.W3)
 
-		correspondingNodesW1 := util.FilterSlice(workshopNodes, func(node ctypes.Vertex[MatchNode[Child, WorkshopSlot]]) bool {
+		correspondingNodesW1 := util.FilterSlice(workshopNodes, func(node graph.Vertex[MatchNode[Child, WorkshopSlot]]) bool {
 			return node.Node.RightValue.Workshop == w1
 		})
 
-		correspondingNodesW2 := util.FilterSlice(workshopNodes, func(node ctypes.Vertex[MatchNode[Child, WorkshopSlot]]) bool {
+		correspondingNodesW2 := util.FilterSlice(workshopNodes, func(node graph.Vertex[MatchNode[Child, WorkshopSlot]]) bool {
 			return node.Node.RightValue.Workshop == w2
 		})
 
-		correspondingNodesW3 := util.FilterSlice(workshopNodes, func(node ctypes.Vertex[MatchNode[Child, WorkshopSlot]]) bool {
+		correspondingNodesW3 := util.FilterSlice(workshopNodes, func(node graph.Vertex[MatchNode[Child, WorkshopSlot]]) bool {
 			return node.Node.RightValue.Workshop == w3
 		})
 
-		allOtherSlots := util.FilterSlice(workshopNodes, func(node ctypes.Vertex[MatchNode[Child, WorkshopSlot]]) bool {
+		allOtherSlots := util.FilterSlice(workshopNodes, func(node graph.Vertex[MatchNode[Child, WorkshopSlot]]) bool {
 			w := node.Node.RightValue.Workshop
 			return w != w1 && w != w2 && w != w3
 		})
 
 		for _, slot := range correspondingNodesW1 {
-			newEdge := ctypes.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]]{
+			newEdge := graph.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]]{
 				VertexFrom: childNode,
 				VertexTo:   slot,
 				Weight:     1,
@@ -116,7 +117,7 @@ func __main() {
 		}
 
 		for _, slot := range correspondingNodesW2 {
-			newEdge := ctypes.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]]{
+			newEdge := graph.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]]{
 				VertexFrom: childNode,
 				VertexTo:   slot,
 				Weight:     2,
@@ -126,7 +127,7 @@ func __main() {
 		}
 
 		for _, slot := range correspondingNodesW3 {
-			newEdge := ctypes.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]]{
+			newEdge := graph.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]]{
 				VertexFrom: childNode,
 				VertexTo:   slot,
 				Weight:     4,
@@ -136,7 +137,7 @@ func __main() {
 		}
 
 		for _, slot := range allOtherSlots {
-			newEdge := ctypes.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]]{
+			newEdge := graph.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]]{
 				VertexFrom: childNode,
 				VertexTo:   slot,
 				Weight:     10,
@@ -147,7 +148,7 @@ func __main() {
 	}
 
 	for _, slot := range workshopNodes {
-		allEdges = append(allEdges, &ctypes.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]]{
+		allEdges = append(allEdges, &graph.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]]{
 			VertexFrom: slot,
 			VertexTo:   sink,
 			Weight:     0,
@@ -159,8 +160,8 @@ func __main() {
 	allVertices = append(allVertices, source)
 	allVertices = append(allVertices, sink)
 
-	network := ctypes.WeigthedNetwork[MatchNode[Child, WorkshopSlot]]{
-		WeigthedDirectedGraph: ctypes.WeigthedDirectedGraph[MatchNode[Child, WorkshopSlot]]{
+	network := network.WeigthedNetwork[MatchNode[Child, WorkshopSlot]]{
+		WeigthedDirectedGraph: graph.WeigthedDirectedGraph[MatchNode[Child, WorkshopSlot]]{
 			Vertices: allVertices,
 			Edges:    allEdges,
 		},
@@ -168,15 +169,15 @@ func __main() {
 		Sink:   sink,
 	}
 
-	fmt.Print(network)
+	// fmt.Print(network)
 
 	flow := network.MinCostMaxFlow()
 
-	util.PrintMap(flow)
+	// util.PrintMap(flow)
 
 	// interpret flow again
 
-	matchingEdges := util.FilterMapBoth(flow, func(wde *ctypes.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]], f float64) bool {
+	matchingEdges := util.FilterMapBoth(flow, func(wde *graph.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]], f float64) bool {
 		if f == 0 {
 			return false
 		}
@@ -203,7 +204,7 @@ func __main() {
 	for _, w := range workshops {
 		fmt.Println()
 		fmt.Printf("Kids of workshop %v (max %v):\n", w.Name, w.Capacity)
-		for e := range util.FilterMapBoth(matchingEdges, func(wde *ctypes.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]], f float64) bool {
+		for e := range util.FilterMapBoth(matchingEdges, func(wde *graph.WeightedDirectedEdge[MatchNode[Child, WorkshopSlot]], f float64) bool {
 			return wde.VertexTo.Node.RightValue.Workshop == w
 		}) {
 			fmt.Printf("%v\n", e.VertexFrom.Node.LeftValue.Name)
