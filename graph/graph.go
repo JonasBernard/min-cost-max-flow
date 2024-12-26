@@ -21,7 +21,7 @@ type Node interface {
 }
 
 /*
-	The "Node" attribute of a graph is generalization of the concept of each vertex having an ID.
+	The "Node" attribute of a graph is a generalization of the concept of each vertex having an ID.
 
 Two instances of this struct are
 considered equal iff their Node attribute points to the same object.
