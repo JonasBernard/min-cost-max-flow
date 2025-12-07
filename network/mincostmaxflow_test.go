@@ -1,7 +1,8 @@
-package main
+package network_test
 
 import (
 	"fmt"
+	"testing"
 
 	"github.com/JonasBernard/min-cost-max-flow/graph"
 	"github.com/JonasBernard/min-cost-max-flow/network"
@@ -16,7 +17,7 @@ func (n TestNode) String() string {
 	return n.Name
 }
 
-func testTraversal() {
+func TestTraversal(t *testing.T) {
 	fmt.Printf("Testing if DFS and BFS work as expected\n")
 
 	a := graph.V(&TestNode{Name: "A"})
@@ -58,7 +59,7 @@ func testTraversal() {
 	util.PrintMap(depths)
 }
 
-func testIsPath() {
+func TestIsPath(t *testing.T) {
 	a := graph.V(&TestNode{Name: "A"})
 	b := graph.V(&TestNode{Name: "B"})
 	c := graph.V(&TestNode{Name: "C"})
@@ -93,7 +94,7 @@ func testIsPath() {
 	fmt.Printf("Is graph path from c? %v\n", g.IsPathFrom(c)) // false
 }
 
-func testShortestPathHop() {
+func TestShortestPathHop(t *testing.T) {
 	a := graph.V(&TestNode{Name: "A"})
 	b := graph.V(&TestNode{Name: "B"})
 	c := graph.V(&TestNode{Name: "C"})
@@ -131,7 +132,7 @@ func testShortestPathHop() {
 	}
 }
 
-func testShortestPathWeights() {
+func TestShortestPathWeights(t *testing.T) {
 	a := graph.V(&TestNode{Name: "A"})
 	b := graph.V(&TestNode{Name: "B"})
 	c := graph.V(&TestNode{Name: "C"})
@@ -162,7 +163,7 @@ func testShortestPathWeights() {
 	}
 }
 
-func testNegativeCycle() {
+func TestNegativeCycle(t *testing.T) {
 	a := graph.V(&TestNode{Name: "A"})
 	b := graph.V(&TestNode{Name: "B"})
 	c := graph.V(&TestNode{Name: "C"})
@@ -187,7 +188,7 @@ func testNegativeCycle() {
 	}
 }
 
-func testResidualGraph() {
+func TestResidualGraph(test *testing.T) {
 	a := graph.V(&TestNode{Name: "A"})
 	b := graph.V(&TestNode{Name: "B"})
 
@@ -231,7 +232,7 @@ func testResidualGraph() {
 	residual.PrintSelfWithFlow(flow)
 }
 
-func testMinCostFlow() {
+func TestMinCostFlow(test *testing.T) {
 	a := graph.V(&TestNode{Name: "A"})
 	b := graph.V(&TestNode{Name: "B"})
 
@@ -262,7 +263,7 @@ func testMinCostFlow() {
 	util.PrintMap(flow)
 }
 
-func testMinCostFlow2() {
+func TestMinCostFlow2(test *testing.T) {
 	a := graph.V(&TestNode{Name: "2"})
 	b := graph.V(&TestNode{Name: "3"})
 
@@ -291,15 +292,4 @@ func testMinCostFlow2() {
 
 	print("Computed maximal flow:\n")
 	util.PrintMap(flow)
-}
-
-func _main() {
-	// testTraversal()
-	// testIsPath()
-	// testShortestPathHop()
-	// testShortestPathWeights()
-	// testNegativeCycle()
-	// testResidualGraph()
-	// testMinCostFlow()
-	testMinCostFlow2()
 }
