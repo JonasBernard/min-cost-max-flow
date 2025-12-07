@@ -3,6 +3,7 @@ package util
 import (
 	"fmt"
 	"math"
+	"slices"
 )
 
 func FilterSlice[T any](slice []T, lambda func(T) bool) (ret []T) {
@@ -98,17 +99,21 @@ func ArgMin[T comparable](values map[T](float64)) T {
 	return index
 }
 
+func ArgMax[T comparable](values map[T](float64)) T {
+	return ArgMin(MapMapValues(values, func(f float64) float64 { return -f }))
+}
+
 func Remove[T any](slice []T, index int) []T {
 	return append(slice[:index], slice[index+1:]...)
 }
 
 func RemoveValue[T comparable](slice []T, value T) []T {
-	index := Find(slice, value)
+	index := FindValue(slice, value)
 	newSlice := Remove(slice, index)
 	return newSlice
 }
 
-func Find[T comparable](slice []T, value T) int {
+func FindValue[T comparable](slice []T, value T) int {
 	for i, v := range slice {
 		if v == value {
 			return i
@@ -117,8 +122,35 @@ func Find[T comparable](slice []T, value T) int {
 	return -1
 }
 
+func Find[T any](slice []T, lambda func(T) bool) int {
+	for i, v := range slice {
+		if lambda(v) {
+			return i
+		}
+	}
+	return -1
+}
+
+func FindAll[T any](slice []T, lambda func(T) bool) []int {
+	var indices []int
+	for i, v := range slice {
+		if lambda(v) {
+			indices = append(indices, i)
+		}
+	}
+	return indices
+}
+
 func PrintMap[S comparable, T any](value map[S]T) {
 	for s, t := range value {
 		fmt.Printf("%v -> %v\n", s, t)
 	}
+}
+
+func All[T any](slice []T, lambda func(T) bool) bool {
+	return len(FilterSlice(slice, lambda)) == len(slice)
+}
+
+func Contains[T comparable](slice []T, value T) bool {
+	return slices.Contains(slice, value)
 }
