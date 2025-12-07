@@ -254,3 +254,7 @@ func Maximize(c []float64, A [][]float64, b []float64) (x []float64, optimalValu
 
 	return x, optimalValue, nil
 }
+
+func Minimize(c []float64, A [][]float64, b []float64) (x []float64, optimalValue float64, err error) {
+	return Maximize(util.Neg(c), A, b)
+}
