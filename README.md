@@ -4,7 +4,7 @@ This repository is only public for technical reasons.
 Feel free to use it, however don't take it as maintained.
 
 Despite the name, the project now contains the following algorithms:
-- Min-cost-max-flow in directed, acyclic network graphs via sucessive shortest paths
+- Min-cost-max-flow in directed, acyclic network graphs via successive shortest paths
 - Minimax for simple symmetric deterministic games of perfect information
 - Alpha-beta-pruning for the same type of games (WIP)
 - Minimum Cost Bipartite Matching via the Min-Cost-Max-Flow implementation from above
