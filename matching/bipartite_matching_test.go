@@ -2,6 +2,7 @@ package matching_test
 
 import (
 	"fmt"
+	"testing"
 
 	"github.com/JonasBernard/min-cost-max-flow/graph"
 	"github.com/JonasBernard/min-cost-max-flow/matching"
@@ -47,7 +48,7 @@ type Workshop struct {
 	Capacity int
 }
 
-func TestMatching() {
+func TestMatching(t *testing.T) {
 	children := []Child{
 		{"Mia", "Tanz", "Tuch", "Akro"},
 		{"Noah", "Tanz", "Akro", "Tuch"},
@@ -251,7 +252,7 @@ func TestMatching() {
 	}
 }
 
-func TestMatching2() {
+func TestMatching2(t *testing.T) {
 	children := []Child{
 		{"Mia", "Jonglage", "Tuch", "Akro"},
 		{"Noah", "Jonglage", "Tuch", "Akro"},
