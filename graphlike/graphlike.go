@@ -1,5 +1,5 @@
 package graphlike
 
-type Graphlike[V] interface {
+type Graphlike[V any] interface {
 	NeightboursOf(V) []V
 }
