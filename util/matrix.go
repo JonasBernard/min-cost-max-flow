@@ -43,7 +43,7 @@ func GetRow(A [][]float64, rowIndex int) []float64 {
 
 func GetColumn(A [][]float64, rowIndex int) []float64 {
 	col := make([]float64, len(A))
-	for i := 0; i < len(A); i++ {
+	for i := range A {
 		col[i] = A[i][rowIndex]
 	}
 	return col
@@ -100,6 +100,17 @@ func VectorAdd(a []float64, b []float64) []float64 {
 	result := make([]float64, len(a))
 	for i := range a {
 		result[i] = a[i] + b[i]
+	}
+	return result
+}
+
+func VectorSub(a []float64, b []float64) []float64 {
+	if len(a) != len(b) {
+		panic("Vectors must be of the same length for subtraction")
+	}
+	result := make([]float64, len(a))
+	for i := range a {
+		result[i] = a[i] - b[i]
 	}
 	return result
 }

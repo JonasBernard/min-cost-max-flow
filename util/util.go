@@ -108,12 +108,12 @@ func Remove[T any](slice []T, index int) []T {
 }
 
 func RemoveValue[T comparable](slice []T, value T) []T {
-	index := FindValue(slice, value)
+	index := IndexOf(slice, value)
 	newSlice := Remove(slice, index)
 	return newSlice
 }
 
-func FindValue[T comparable](slice []T, value T) int {
+func IndexOf[T comparable](slice []T, value T) int {
 	for i, v := range slice {
 		if v == value {
 			return i
