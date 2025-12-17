@@ -15,3 +15,6 @@ Despite the name, the project now contains the following algorithms:
 - Simplex algorithm using Bland's pivot rule on natural systems of the natural form max c@x s.t. A@x <= b, where a start basis is given
 - Phase One Simplex to find a start basis of systems of the form named above (WIP)
 - LP maximization and minimization of systems in natural form using the above implementation
+- Simple algorithm to generate random permutations
+- A generic binary search that uses Phase One from above to be used in the elipsoid method (WIP)
+- Number theoretic algorithm that computes for any rational a fractional repesentation
