@@ -52,6 +52,38 @@ func TestPhaseOneH81(t *testing.T) {
 	assert.InDeltaSlice(t, expectedY, y, epsilon)
 }
 
+func TestSimplexInH81WithDifferentBasis(t *testing.T) {
+	A := [][]float64{
+		{3, -1},
+		{4, 2},
+		{-1, -1},
+		{-3, 1},
+		{-1, 0},
+		{0, -1},
+	}
+	b := []float64{20, 100, -1, -20, 0, 0}
+
+	c := []float64{2, 1}
+
+	basis := []int{1, 2}
+
+	x, y, optimalValue, endbasis, err := lp.Simplex(c, A, b, basis)
+
+	assert.NoError(t, err)
+
+	expectedX := []float64{14, 22}
+	assert.InDeltaSlice(t, expectedX, x, epsilon)
+
+	expectedOptimalValue := 50.0
+	assert.InDelta(t, expectedOptimalValue, optimalValue, epsilon)
+
+	expectedEndbasis := []int{0, 1}
+	assert.Equal(t, expectedEndbasis, endbasis)
+
+	expectedY := []float64{0, 0.5, 0, 0, 0, 0}
+	assert.InDeltaSlice(t, expectedY, y, epsilon)
+}
+
 func TestPhaseOneH81UsingDualSimplex(t *testing.T) {
 	A := [][]float64{
 		{3, -1},
