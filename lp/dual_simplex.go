@@ -37,9 +37,20 @@ func DualSimplex(A [][]float64, b []float64, c []float64, startbasis []int) (x [
 
 	t.AppendHeader(table.Row{"Iter", "Basis", "Nonbasis", "y", "A_B", "x", "A_N", "z_N", "j", "w_B", "i", "gamma", "Dual objective"})
 
+	t.AppendRow(table.Row{
+		"-", basis.Indices, "", util.PrintVector(basis.YValues),
+	})
+	t.AppendSeparator()
+
 	iter := 0
 	for {
 		iter++
+
+		if iter > maxIterations {
+			t.AppendFooter(table.Row{"Maximum", "number", "of", "iterations", "reached"})
+			t.Render()
+			return nil, nil, 0, basis.Indices, ErrMaxIterationsReached
+		}
 
 		A_B := util.GetRows(A, basis.Indices)
 		b_B := util.GetValues(b, basis.Indices)
@@ -64,10 +75,6 @@ func DualSimplex(A [][]float64, b []float64, c []float64, startbasis []int) (x [
 		j := util.Find(N, func(l int) bool {
 			return z_N[basis.ToNonBasisIndex(m, l)] < 0.0
 		})
-
-		if iter == 1 {
-			j = 1
-		}
 
 		if j == -1 {
 			t.AppendRow(table.Row{

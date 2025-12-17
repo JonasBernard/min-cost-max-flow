@@ -12,6 +12,9 @@ import (
 )
 
 var ErrUnbounded = errors.New("the linear program is unbounded")
+var ErrMaxIterationsReached = errors.New("maximum number of iterations reached")
+
+const maxIterations = 1000
 
 // Simplex method on a system in natural form max c@x s.t. A@x <= b using Bland's pivot rule
 func Simplex(c []float64, A [][]float64, b []float64, startbasis []int) (x []float64, y []float64, optimalValue float64, endbasis []int, err error) {
