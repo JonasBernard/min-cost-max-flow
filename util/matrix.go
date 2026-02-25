@@ -87,9 +87,30 @@ func DotProduct(a []float64, b []float64) float64 {
 	return sum
 }
 
+func ReverseDotProduct(a []float64, b []float64) [][]float64 {
+	if len(a) != len(b) {
+		panic("Vectors must be of the same length for reverse dot product: got lengths " + fmt.Sprint(len(a)) + " and " + fmt.Sprint(len(b)))
+	}
+	n := len(a)
+	result := make([][]float64, n)
+	for i := range n {
+		result[i] = make([]float64, n)
+		for j := range n {
+			result[i][j] = a[i] * b[j]
+		}
+	}
+	return result
+}
+
 func ScalarMult(scalar float64, v []float64) []float64 {
 	return MapSlice(v, func(x *float64) float64 {
 		return scalar * *x
+	})
+}
+
+func ScalarMatrixMult(scalar float64, A [][]float64) [][]float64 {
+	return MapSlice(A, func(row *[]float64) []float64 {
+		return ScalarMult(scalar, *row)
 	})
 }
 
@@ -111,6 +132,22 @@ func VectorSub(a []float64, b []float64) []float64 {
 	result := make([]float64, len(a))
 	for i := range a {
 		result[i] = a[i] - b[i]
+	}
+	return result
+}
+
+func MatrixSub(A [][]float64, B [][]float64) [][]float64 {
+	if len(A) != len(B) || len(A[0]) != len(B[0]) {
+		panic("Matrices must be of the same dimensions for subtraction")
+	}
+	M := len(A)
+	N := len(A[0])
+	result := make([][]float64, M)
+	for i := range M {
+		result[i] = make([]float64, N)
+		for j := range N {
+			result[i][j] = A[i][j] - B[i][j]
+		}
 	}
 	return result
 }
