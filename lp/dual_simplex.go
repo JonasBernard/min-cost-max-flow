@@ -94,7 +94,8 @@ func DualSimplex(A [][]float64, b []float64, c []float64, startbasis []int) (x [
 			return x, basis.YValues, util.DotProduct(basis.YValues, b), basis.Indices, nil
 		}
 
-		A_jT := util.GetRow(A, j)
+		jGlobal := N[j]
+		A_jT := util.GetRow(A, jGlobal)
 		A_BT := util.Transpose(A_B)
 
 		w_B, error := SolveLinearSystem(A_BT, A_jT)
@@ -133,7 +134,7 @@ func DualSimplex(A [][]float64, b []float64, c []float64, startbasis []int) (x [
 				x,
 				util.PrintMatrix(A_N),
 				util.PrintVector(z_N),
-				j,
+				jGlobal,
 				util.PrintVector(w_B),
 				i,
 				gamma,
@@ -147,11 +148,10 @@ func DualSimplex(A [][]float64, b []float64, c []float64, startbasis []int) (x [
 		basis.injectY(y_B_update)
 
 		basis.Indices = util.RemoveValue(basis.Indices, i)
-		basis.Indices = append(basis.Indices, j)
+		basis.Indices = append(basis.Indices, jGlobal)
 
 		slices.Sort(basis.Indices)
 
-		basis.YValues[j] = gamma
-
+		basis.YValues[jGlobal] = gamma
 	}
 }
